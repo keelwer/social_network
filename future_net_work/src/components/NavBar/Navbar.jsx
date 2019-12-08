@@ -4,16 +4,16 @@ import s from './Navbar.module.css'
 const Navbar = () => {
     return <nav className={s.nav}>
         <div>
-            <a href="#">Profile</a>
+            <a href="/profile">Profile</a>
         </div>
         <div>
-            <a href="#">Message</a>
+            <a href="/dialogs">Dialogs</a>
         </div>
         <div>
-            <a href="#">News</a>
+            <a href="/news">News</a>
         </div>
         <div>
-            <a href="#">Music</a>
+            <a href="/music">Music</a>
         </div>
     </nav>
 
