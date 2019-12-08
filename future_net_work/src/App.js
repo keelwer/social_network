@@ -21,7 +21,6 @@ function App() {
                     <Route path='/news' component={News}/>
                     <Route path='/music' component={Music}/>
                 </div>
-
             </div>
         </BrowserRouter>)
 }
