@@ -7,6 +7,7 @@ import Dialogs from "./components/Dialogs/Dialogs";
 import {Route, BrowserRouter} from "react-router-dom";
 import News from "./components/News/News";
 import Music from "./components/Music/Music";
+import {subscribe} from "./redux/state";
 
 
 function App(props) {
@@ -18,14 +19,18 @@ function App(props) {
                 <Header/>
                 <Navbar/>
                 <div className='app-wrapper-content'>
-                    <Route path='/profile' render={() => <Profile posts={props.appState.posts}/>}/>
-                    <Route path='/dialogs' render={() => <Dialogs dialogs={props.appState.dialogs}
-                                                                  message_data={props.appState.message_data}/>}/>
+                    <Route path='/profile'
+                           render={() => <Profile posts={props.appState.profilePage} addPost={props.addPost}
+                                                  changeNewPostText={props.changeNewPostText}/>}/>
+                    <Route path='/dialogs' render={() => <Dialogs dialogs={props.appState.dialogsPage}
+                                                                  message_data={props.appState.dialogsPage}/>}/>
                     <Route path='/news' render={() => <News/>}/>
                     <Route path='/music' render={() => <Music/>}/>
                 </div>
             </div>
         </BrowserRouter>)
 }
+
+
 
 export default App;
