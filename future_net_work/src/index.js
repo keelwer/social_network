@@ -6,7 +6,7 @@ import * as serviceWorker from './serviceWorker';
 import store from "./redux/state";
 
 let rerenderTree = () => {
-    ReactDOM.render(<App appState={store.getState()} addPost={store.AddPost.bind(store)} changeNewPostText={store.changeNewPostText.bind(store)}/>, document.getElementById('root'));
+    ReactDOM.render(<App appState={store.getState()} dispatch={store.dispatch.bind(store)}/>, document.getElementById('root'));
 };
 
 rerenderTree(store.getState);

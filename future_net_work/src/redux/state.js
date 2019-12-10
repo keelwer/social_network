@@ -24,29 +24,32 @@ let store = {
         },
 
     },
-    getState () {
-        return this._state;
-    },
     _rerenderTree() {
         console.log('State changed')
     },
-    AddPost() {
-        let newpost = {
-            id: 4,
-            message: this._state.profilePage.newPostText,
-            like_counts: 0,
-        };
-        this._state.profilePage.posts.push(newpost);
-        this._state.profilePage.newPostText = '';
-        this._rerenderTree(this._state)
-    },
-    changeNewPostText(newText) {
-        this._state.profilePage.newPostText = newText;
-        this._rerenderTree(this._state)
+    getState() {
+        return this._state;
     },
     subscribe(observer) {
         this._rerenderTree = observer;
     },
+
+    dispatch(action) {
+        if (action.type === 'ADD_POST') {
+            let newpost = {
+                id: 4,
+                message: this._state.profilePage.newPostText,
+                like_counts: 0,
+            };
+            this._state.profilePage.posts.push(newpost);
+            this._state.profilePage.newPostText = '';
+            this._rerenderTree(this._state)
+        } else if (action.type === 'CHANGE-NEW-POST-TEXT') {
+            this._state.profilePage.newPostText = action.newText;
+            this._rerenderTree(this._state)
+        }
+    },
+
 };
 window.store = store;
 
