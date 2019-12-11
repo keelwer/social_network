@@ -7,7 +7,7 @@ import Dialogs from "./components/Dialogs/Dialogs";
 import {Route, BrowserRouter} from "react-router-dom";
 import News from "./components/News/News";
 import Music from "./components/Music/Music";
-import store, {subscribe} from "./redux/state";
+import store, {subscribe} from "./redux/store";
 
 
 function App(props) {
@@ -20,7 +20,7 @@ function App(props) {
                 <Navbar/>
                 <div className='app-wrapper-content'>
                     <Route path='/profile'
-                           render={() => <Profile posts={props.appState.profilePage} dispatch={props.dispatch}/>}/>
+                           render={() => <Profile store={props.store}/>}/>
                     <Route path='/dialogs' render={() => <Dialogs store={props.store}/>}/>
                     <Route path='/news' render={() => <News/>}/>
                     <Route path='/music' render={() => <Music/>}/>
