@@ -4,21 +4,19 @@ import {addPostActionCreater, changeNewPostTextActionCreater} from "../../../red
 import MyPosts from "./MyPosts";
 import StoreContext from "../../../StoreContext";
 
-const MyPostsContainer = (props) => {
-
-
+const MyPostsContainer = () => {
     return (
         <StoreContext.Consumer>{
             (store) => {
-                let state = props.store.getState();
+                let state = store.getState();
 
                 let addPost = () => {
-                    props.store.dispatch(addPostActionCreater());
+                    store.dispatch(addPostActionCreater());
                 };
 
                 let onPostChange = (text) => {
                     let action = changeNewPostTextActionCreater(text);
-                    props.store.dispatch(action);
+                    store.dispatch(action);
                 };
 
                 return <MyPosts changeNewPostText={onPostChange} addPost={addPost} posts={state.profilePage.posts}
