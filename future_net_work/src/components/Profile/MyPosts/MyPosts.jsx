@@ -16,7 +16,7 @@ const MyPosts = (props) => {
         props.changeNewPostText(text);
 
     };
-    let postElements = props.posts.map(post => <Post text={post.message} like_counts={post.like_counts}/>);
+    let postElements = props.posts.map(post => <Post text={post.message} key={post.id} like_counts={post.like_counts}/>);
 
     return <div className={s.content}>
         <div className={s.description}>
