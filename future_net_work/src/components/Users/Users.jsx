@@ -1,6 +1,7 @@
 import styles from "./Users.module.css";
 import photoAcc from "../../images/empty_acc.jpg";
 import React from "react";
+import {NavLink} from "react-router-dom";
 
 
 let Users = (props) => {
@@ -12,20 +13,22 @@ let Users = (props) => {
         pages.push(i);
     }
 
-  return (
-      <div>
-          <div>
-              {pages.map(p => {
-                  return <span className={props.currentPage === p && styles.selectPage} onClick={(e) => {
-                      props.onPageChange(p)
-                  }}>{p}</span>
-              })}
-          </div>
-          {
-              props.users.map(u => <div key={u.id}>
+    return (
+        <div>
+            <div>
+                {pages.map(p => {
+                    return <span className={props.currentPage === p && styles.selectPage} onClick={(e) => {
+                        props.onPageChange(p)
+                    }}>{p}</span>
+                })}
+            </div>
+            {
+                props.users.map(u => <div key={u.id}>
                     <span>
                         <div>
-                            <img src={u.photos.small != null ? u.photos.small : photoAcc} className={styles.userPhoto}/>
+                            <NavLink to={'/profile/' + u.id}><img src={u.photos.small != null ? u.photos.small : photoAcc}
+                                          className={styles.userPhoto}/>
+                            </NavLink>
                         </div>
                         <div>
                             {u.followed
@@ -38,7 +41,7 @@ let Users = (props) => {
 
                         </div>
                     </span>
-                  <span>
+                    <span>
                         <span>
                             <div>
                                 {u.name}
@@ -52,10 +55,10 @@ let Users = (props) => {
                             <div>{"u.location.city"}</div>
                         </span>
                     </span>
-              </div>)
-          }
-      </div>
-  )
+                </div>)
+            }
+        </div>
+    )
 };
 
 export default Users;
