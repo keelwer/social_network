@@ -1,4 +1,5 @@
 import sidebarReducer from "./sidebar_reducer";
+import {userAPI} from "../api/api";
 
 const ADD_POST = 'ADD_POST';
 const CHANGE_NEW_POST_TEXT = 'CHANGE_NEW_POST_TEXT';
@@ -48,6 +49,11 @@ export const profileReducer = (state = initialState, action) => {
 
 export const addPostActionCreater = () => ({type: ADD_POST});
 export const setUserProfile = (profile) => ({type: SET_USER_PROFILE, profile});
+export const getUserProfile =(userId) => (dispatch) => {
+    userAPI.getProfile(userId).then(response => {
+        dispatch(setUserProfile(response.data));
+    })
+};
 export const changeNewPostTextActionCreater = (text) => ({type: CHANGE_NEW_POST_TEXT, newText: text});
 
 export default profileReducer;
