@@ -1,8 +1,7 @@
-import sidebarReducer from "./sidebar_reducer";
+
 import {profileAPI, userAPI} from "../api/api";
 
 const ADD_POST = 'ADD_POST';
-const CHANGE_NEW_POST_TEXT = 'CHANGE_NEW_POST_TEXT';
 const SET_USER_PROFILE = 'SET_USER_PROFILE';
 const SET_STATUS = 'SET_STATUS';
 
@@ -12,7 +11,6 @@ let initialState = {
         {id: 2, message: 'Cool React', like_counts: 9},
         {id: 3, message: 'React-Redux', like_counts: 5},
     ],
-    newPostText: 'React+Redux',
     profile: null,
     status: '',
 };
@@ -22,19 +20,12 @@ export const profileReducer = (state = initialState, action) => {
         case ADD_POST: {
             let newpost = {
                 id: 4,
-                message: state.newPostText,
+                message: action.newMessagePost,
                 like_counts: 0,
             };
             return {
                 ...state,
                 posts: [...state.posts, newpost],
-                newPostText: ''
-            };
-        }
-        case CHANGE_NEW_POST_TEXT: {
-            return {
-                ...state,
-                newPostText: action.newText
             };
         }
         case SET_STATUS: {
@@ -55,7 +46,7 @@ export const profileReducer = (state = initialState, action) => {
 
 };
 
-export const addPostActionCreater = () => ({type: ADD_POST});
+export const addPostActionCreater = (newMessagePost) => ({type: ADD_POST, newMessagePost});
 export const setUserProfile = (profile) => ({type: SET_USER_PROFILE, profile});
 export const setStatus = (status) => ({type: SET_STATUS, status});
 export const getUserProfile = (userId) => (dispatch) => {
@@ -77,7 +68,5 @@ export const updateStatus = (status) => (dispatch) => {
         }
     })
 };
-
-export const changeNewPostTextActionCreater = (text) => ({type: CHANGE_NEW_POST_TEXT, newText: text});
 
 export default profileReducer;
