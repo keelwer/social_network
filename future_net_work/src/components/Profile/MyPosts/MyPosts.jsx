@@ -5,35 +5,30 @@ import {Field, reduxForm} from "redux-form";
 import {maxLength30, maxLengthCreator, required} from "../../../utils/validators/validators";
 import {Textarea} from "../../common/FormsControl/FormsControl";
 
-const MyPosts = (props) => {
-
-    let newPostElement = React.createRef();
-
-    let onAddpost = () => {
-        props.addPost();
-    };
+class MyPosts extends React.Component {
+    shouldComponentUpdate(nextProps, nextState) {
+        return nextProps != this.props && nextState != this.state;
+    }
 
 
-    let onPostChange = () => {
-        let text = newPostElement.current.value;
-        props.changeNewPostText(text);
+    render() {
 
-    };
+        let addNewPost = (values) => {
+            this.props.addPost(values.newMessagePost);
+        };
 
-    let addNewPost = (values) => {
-        props.addPost(values.newMessagePost);
-    };
+        let postElements = this.props.posts.map(post => <Post text={post.message} key={post.id}
+                                                              like_counts={post.like_counts}/>);
 
-    let postElements = props.posts.map(post => <Post text={post.message} key={post.id} like_counts={post.like_counts}/>);
-
-    return <div className={s.content}>
-        <div className={s.description}>
-            My posts
-            <AddMessagePostReduxForm onSubmit={addNewPost}/>
-            {postElements}
+        return <div className={s.content}>
+            <div className={s.description}>
+                My posts
+                <AddMessagePostReduxForm onSubmit={addNewPost}/>
+                {postElements}
+            </div>
         </div>
-    </div>
-};
+    }
+}
 
 
 const maxLegth10 = maxLengthCreator(10);
