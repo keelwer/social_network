@@ -17,7 +17,7 @@ import {withAuthRedirect} from "../HOC/withAuthRedirect";
 import {
     getCurrentPage, getFollowingInProgress,
     getIsFetching,
-    getTotalUserCount, getUserspage,
+    getTotalUserCount, getUserspage, getUserspageSuper,
     pageSize
 } from "../../redux/users-selectors";
 
