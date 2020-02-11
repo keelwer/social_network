@@ -2,8 +2,8 @@ from additional_functions import *
 
 
 def test_TradePrice(db):
-    price = str(get_trades(db=db, evdate='02.12.2019', tradeno='352303658').PRICE.values[0])
-    message_in_signals = str(get_custom_signals(db=db, taskid='39', criteriaid='71', tsno='352303658').MESSAGE.values[0])
+    price = str(get_trades(date='02.12.2019').PRICE)
+    message_in_signals = str(get_custom_signals(taskid='39').MESSAGE)
     assert (price == message_in_signals)
 
 

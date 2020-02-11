@@ -20,6 +20,7 @@ def condition(**kwargs):
 def make_dataframe(output_request):
     df = DataFrame(output_request.fetchall())
     df.columns = output_request.keys()
+    df.columns = df.columns.str.lower()
     return df
 
 
