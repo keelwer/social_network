@@ -1,0 +1,6 @@
+server: c4t-sqldev01.forecsys.ru
+instance: Aton
+password: J2Cc0Ict
+login: admin
+type_instance: Dev
+db_type: mssql
