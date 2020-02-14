@@ -1,0 +1,10 @@
+database:
+  server: c4t-sqldev01.forecsys.ru
+  provider: mssql
+instance:
+  name: Check4Trick.Aton
+  password: J2Cc0Ict
+  login: admin
+  type: Dev
+task:
+  id: 39
