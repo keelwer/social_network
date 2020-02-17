@@ -315,42 +315,43 @@ function getInput(inputType, value, header, onChangeCallback, choices = [], allI
           }
         }}/>
     </div>)
-  } else if (inputType === 'time') {
-    return (<div className="datetime-filter">
-      {header && <p className="safran-filter-caption">{header}</p>}
-      <TimePicker locale="ru-RU" value={value} maxDetail="second" onChange={onChangeCallback} clearIcon={null} clockIcon={null}/>
-    </div>)
-  } else if (inputType === 'datetime') {
-    return (<div className="datetime-filter">
-      {header && <p className="safran-filter-caption">{header}</p>}
-      <DateTimePicker locale="ru-RU" value={value} onChange={onChangeCallback}/>
-    </div>)
-  } else if (inputType === 'text') {
-    return (<div className="text-filter">
-      {header && <p className="safran-top-filter-caption">{header}</p>}
-      <input className="c4t-input" value={value} onChange={(event) => onChangeCallback(getChangedText(event))}/>
-    </div>)
+//  } else if (inputType === 'time') {
+//    return (<div className="datetime-filter">
+//      {header && <p className="safran-filter-caption">{header}</p>}
+//      <TimePicker locale="ru-RU" value={value} maxDetail="second" onChange={onChangeCallback} clearIcon={null} clockIcon={null}/>
+//    </div>)
+//  } else if (inputType === 'datetime') {
+//    return (<div className="datetime-filter">
+//      {header && <p className="safran-filter-caption">{header}</p>}
+//      <DateTimePicker locale="ru-RU" value={value} onChange={onChangeCallback}/>
+//    </div>)
+//  } else if (inputType === 'text') {
+//    return (<div className="text-filter">
+//      {header && <p className="safran-top-filter-caption">{header}</p>}
+//      <input className="c4t-input" value={value} onChange={(event) => onChangeCallback(getChangedText(event))}/>
+//    </div>)
   } else if (inputType === 'select') {
     return (<div className="text-filter">
       {header && <p className="safran-top-filter-caption">{header}</p>}
       <select className="c4t-select" onChange={(event) => onChangeCallback(getChangedText(event))}>
         {allInChoices && <option value="">Все</option>}
+        <option value={option.value} selected={optionsState == option.value}>{option.label}</option>
         {choices.map(choice => (<option selected={value === choice.value || value === choice.text} value={choice.value}>{choice.text}</option>))}
       </select>
     </div>)
-  } else if (inputType === 'checkbox') {
-    return (<div className="text-filter">
-      {header && <p className="safran-top-filter-caption">{header}</p>}
-      <input type="checkbox" checked={value} onChange={(event) => onChangeCallback(getChangedText(event))}></input>
-    </div>)
-  } else if (inputType === 'password') {
-      return (<div className="text-filter">
-          {header && <p className="safran-top-filter-caption">{header}</p>}
-          <input type="password" className="c4t-input" value={value} onChange={(event) => onChangeCallback(getChangedText(event))}/>
-      </div>)
-  } else {
-    throw new WrongFilterTypeError(inputType);
-  }
+//  } else if (inputType === 'checkbox') {
+//    return (<div className="text-filter">
+//      {header && <p className="safran-top-filter-caption">{header}</p>}
+//      <input type="checkbox" checked={value} onChange={(event) => onChangeCallback(getChangedText(event))}></input>
+//    </div>)
+//  } else if (inputType === 'password') {
+//      return (<div className="text-filter">
+//          {header && <p className="safran-top-filter-caption">{header}</p>}
+//          <input type="password" className="c4t-input" value={value} onChange={(event) => onChangeCallback(getChangedText(event))}/>
+//      </div>)
+//  } else {
+//    throw new WrongFilterTypeError(inputType);
+//  }
 }
 
 function getChangedText(event) {

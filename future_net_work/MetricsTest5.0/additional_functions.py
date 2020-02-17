@@ -22,6 +22,21 @@ class MetricTest:
         df.columns = df.columns.str.lower()
         return df
 
+    def get_dates_and_arguments(self, market=None, **kwargs):
+        dates = []
+        mapping_type = {'trade': 2, 'order': 1, 'withdraws': 3, 'alltrades': 12, 'timeevents': 14}
+        if 'task' in kwargs.keys():
+            dates += [task.date for task in self.get_task(id=kwargs['task'], market=market)]
+            kwargs.pop('task')
+        if 'tradeid' in kwargs.keys():
+            kwargs['TRADENO'] = kwargs.pop('tradeid')
+        if 'date' in kwargs.keys():
+            dates.append(datetime.strptime(kwargs.pop('date'), "%d.%m.%Y").strftime("%Y%m%d"))
+        if 'type' in kwargs.keys():
+            kwargs['evtype'] = mapping_type[kwargs.pop('type')]
+        return dates, kwargs
+
+
     def get_task(self, id, market=None):
         if self.market:
             market = self.market
@@ -33,16 +48,9 @@ class MetricTest:
 
     def get_trades(self, market=None, **kwargs):
         trades = []
-        dates = []
         if self.market:
             market = self.market
-        if 'task' in kwargs.keys():
-            dates += [task.date for task in self.get_task(id=kwargs['task'], market=market)]
-            kwargs.pop('task')
-        if 'tradeid' in kwargs.keys():
-            kwargs['TRADENO'] = kwargs.pop('tradeid')
-        if 'date' in kwargs.keys():
-            dates.append(datetime.strptime(kwargs.pop('date'), "%d.%m.%Y").strftime("%Y%m%d"))
+        dates, kwargs = self.get_dates_and_arguments(market=market, **kwargs)
         for date in dates:
             df = self.make_dataframe(
                 self.db.get_data(date=str(date), market=market, table='FRC_TRADES', schema='History', **kwargs))
@@ -52,14 +60,9 @@ class MetricTest:
 
     def get_signals(self, market=None, **kwargs):
         signals = []
-        dates = []
         if self.market:
             market = self.market
-        if 'date' in kwargs.keys():
-            dates.append(datetime.strptime(kwargs.pop('date'), "%d.%m.%Y").strftime("%Y%m%d"))
-        if 'task' in kwargs.keys():
-            dates += [task.date for task in self.get_task(id=kwargs['task'], market=market)]
-            kwargs['taskid'] = kwargs.pop('task')
+        dates, kwargs = self.get_dates_and_arguments(market=market, **kwargs)
         for date in dates:
             df = self.make_dataframe(
                 self.db.get_data(date=str(date), market=market, table='FRC_CUSTOMSIGNALS', schema='Client', **kwargs))
@@ -69,14 +72,9 @@ class MetricTest:
 
     def get_all_trades(self, market=None, **kwargs):
         all_trades = []
-        dates = []
         if self.market:
             market = self.market
-        if 'date' in kwargs.keys():
-            kwargs['evdate'] = datetime.strptime(kwargs.pop('date'), "%d.%m.%Y").strftime("%Y%m%d")
-        if 'task' in kwargs.keys():
-            dates += [task.date for task in self.get_task(id=kwargs['task'], market=market)]
-            kwargs.pop('task')
+        dates, kwargs = self.get_dates_and_arguments(market=market, **kwargs)
         for date in dates:
             df = self.make_dataframe(
                 self.db.get_data(date=str(date), market=market, table='FRC_ALL_TRADES', schema='History', **kwargs))
@@ -89,11 +87,7 @@ class MetricTest:
         dates = []
         if self.market:
             market = self.market
-        if 'date' in kwargs.keys():
-            kwargs['evdate'] = datetime.strptime(kwargs.pop('date'), "%d.%m.%Y").strftime("%Y%m%d")
-        if 'task' in kwargs.keys():
-            dates += [task.date for task in self.get_task(id=kwargs['task'], market=market)]
-            kwargs.pop('task')
+        dates, kwargs = self.get_dates_and_arguments(market=market, **kwargs)
         for date in dates:
             df = self.make_dataframe(
                 self.db.get_data(date=str(date), market=market, table='FRC_ORDERS', schema='History', **kwargs))
@@ -103,17 +97,9 @@ class MetricTest:
 
     def get_events(self, market=None, **kwargs):
         events = []
-        dates = []
         if self.market:
             market = self.market
-        mapping_type = {'trade': 2, 'order': 1, 'withdraws': 3, 'alltrades': 12, 'timeevents': 14}
-        if 'type' in kwargs.keys():
-            kwargs['evtype'] = mapping_type[kwargs.pop('type')]
-        if 'date' in kwargs.keys():
-            kwargs['evdate'] = datetime.strptime(kwargs.pop('date'), "%d.%m.%Y").strftime("%Y%m%d")
-        if 'task' in kwargs.keys():
-            dates += [task.date for task in self.get_task(id=kwargs['task'], market=market)]
-            kwargs.pop('task')
+        dates, kwargs = self.get_dates_and_arguments(market=market, **kwargs)
         for date in dates:
             df = self.make_dataframe(
                 self.db.get_data(date=str(date), market=market, table='FRC_EVENTS', schema='History', **kwargs))
