@@ -40,3 +40,26 @@ def db(instance_dir):
     # db = EventMonitoringDB.EventMonitoringDB(instance_dir=instance_dir[0])
     db = EventMonitoringDB.EventMonitoringDB(instance_dir='D:\check')
     return db
+
+
+
+
+
+
+
+Инстр:ЦенаПредпослСделки
+
+   	declare @seccode varchar(12);
+   declare @secboard varchar(4);
+   declare @tsno decimal(38,0);
+   declare @evdate decimal(38,0);
+   set @evdate = 20191204;
+   set @secboard = 'TQBR';
+   set @seccode = 'AGRO';
+   set @tsno = 4050676079;
+   select price
+   from [Check4Trick.Aton.QA.HistoryEQ].[dbo].[FRC_TRADES]
+   where SECBOARD = @secboard and SECCODE = @seccode and EVDATE = @evdate and TRADETYPE not in ('H','h','G') and TRADENO in
+   (select max(TRADENO)
+   from [Check4Trick.Aton.QA.HistoryEQ].[dbo].[FRC_TRADES]
+   where SECBOARD = @secboard and SECCODE = @seccode and EVDATE = @evdate and TRADETYPE not in ('H','h','G') and TRADENO < @tsno)
