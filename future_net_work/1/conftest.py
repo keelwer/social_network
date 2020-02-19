@@ -63,3 +63,16 @@ def db(instance_dir):
    (select max(TRADENO)
    from [Check4Trick.Aton.QA.HistoryEQ].[dbo].[FRC_TRADES]
    where SECBOARD = @secboard and SECCODE = @seccode and EVDATE = @evdate and TRADETYPE not in ('H','h','G') and TRADENO < @tsno)
+
+
+КлиентИнстр:ОбъемСделокИсторическая
+select SECBOARD, SECCODE, FIRMCODE, SPECCODE, sum(qty_all) as qty
+from [Check4Trick.Aton.QA.HistoryEQ].[dbo].[FRC_HIST_SPECSEC]
+where RECDATE in
+(
+select max(RECDATE)
+from [Check4Trick.Aton.QA.HistoryEQ].[dbo].[FRC_HIST_SPECSEC]
+where RECDATE < 20191204
+)
+group by SECBOARD, SECCODE, FIRMCODE, SPECCODE
+order by SECBOARD, SECCODE, FIRMCODE, SPECCODE
