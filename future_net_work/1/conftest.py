@@ -60,9 +60,8 @@ def db(instance_dir):
    select price
    from [Check4Trick.Aton.QA.HistoryEQ].[dbo].[FRC_TRADES]
    where SECBOARD = @secboard and SECCODE = @seccode and EVDATE = @evdate and TRADETYPE not in ('H','h','G') and TRADENO in
-   (select max(TRADENO)
-   from [Check4Trick.Aton.QA.HistoryEQ].[dbo].[FRC_TRADES]
-   where SECBOARD = @secboard and SECCODE = @seccode and EVDATE = @evdate and TRADETYPE not in ('H','h','G') and TRADENO < @tsno)
+   (select max(TRADENO) from [Check4Trick.Aton.QA.HistoryEQ].[dbo].[FRC_TRADES] where SECBOARD = @secboard and SECCODE = @seccode
+and EVDATE = @evdate and TRADETYPE not in ('H','h','G') and TRADENO < @tsno)
 
 
 КлиентИнстр:ОбъемСделокИсторическая
