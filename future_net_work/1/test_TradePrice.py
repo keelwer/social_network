@@ -13,15 +13,17 @@ def test_TradePrice(db, task):
             ~df.tradetype.isin(['H', 'h', 'G']))][['price']]
         assert (signal.price == price)
 
-
-
-    trades = db.get_trades(task=task)
-    signals = db.get_signals(task=task)
-    trades.sort(key=lambda trade: trade.tradeid, reverse=False)
-    signals.sort(key=lambda signals: signals.tradeid, reverse=False)
-    assert (len(trades) == len(signals))
-    for index, trade in enumerate(trades):
-        assert (float(trade.price) == float(signals[index].message))
+    '''КлиентИнстр:ОбъемСделокИсторическая
+    select SECBOARD, SECCODE, FIRMCODE, SPECCODE, sum(qty_all) as qty
+    from [Check4Trick.Aton.QA.HistoryEQ].[dbo].[FRC_HIST_SPECSEC]
+    where RECDATE in
+    (
+    select max(RECDATE)
+    from [Check4Trick.Aton.QA.HistoryEQ].[dbo].[FRC_HIST_SPECSEC]
+    where RECDATE < 20191204
+    )
+    group by SECBOARD, SECCODE, FIRMCODE, SPECCODE
+    order by SECBOARD, SECCODE, FIRMCODE, SPECCODE'''
 
 
 Инстр:ЦенаПредпослСделки

@@ -70,10 +70,10 @@ class DbRepo(Repo):
         task = Task(df)
         return task
 
-    def get_trades(self, **kwargs):
+    def get_trades(self, order_by, **kwargs):
         trades = []
         dates, kwargs = self.__get_dates_and_arguments(**kwargs)[:2]
-        return TrateList(connection=self.connection[f'history_{str(self.market)}'], dates=dates, kwargs=kwargs)
+        return TradeList(connection=self.connection[f'history_{str(self.market)}'], dates=dates, kwargs=kwargs)
         # for date in dates:
         #     df = self.__make_dataframe(self.get_data(date=str(date), table='FRC_TRADES', schema='history', **kwargs))
         #     trades_for_date = [Trade(row) for index, row in df.iterrows()]
