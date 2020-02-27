@@ -1,11 +1,8 @@
 from .Repo import Repo
 import datetime
-# from pandas import DataFrame
-import pandas
+from pandas import DataFrame
 from EventMonitoringDeploy import monitoring_instance
 from Events.EventTypes import Task, Trade, Signal, AllTrades, Orders, Events
-
-
 
 
 class DbRepo(Repo):
@@ -14,22 +11,6 @@ class DbRepo(Repo):
         self.connection = connection
         self.markets = markets
         self.market = None
-
-    def order_by(self, args):
-        if args:
-            self.orderby = 'order by'
-            for field in args:
-                self.orderby += f' {field}'
-            order_list = self.orderby.split()
-            result_order_list = order_list.copy()[:3]
-            for field in order_list[3:]:
-                field = f',{field}'
-                result_order_list.append(field)
-            self.orderby = ' '.join(result_order_list)
-            return self.orderby
-        else:
-            return ""
-
 
     def condition_for_request(self, **kwargs):
         condition = ''
@@ -45,9 +26,9 @@ class DbRepo(Repo):
         condition = ' '.join(result_condition)
         return condition
 
-    def get_data(self, date, table, schema, order_by=None, **kwargs):
+    def get_data(self, date, table, schema, **kwargs):
         kwargs['EVDATE'] = date
-        query = f'SELECT * FROM {table} {self.condition_for_request(**kwargs)} {self.order_by(order_by)}'
+        query = f'SELECT * FROM {table} {self.condition_for_request(**kwargs)}'
         result = self.connection[f'{schema.lower()}_{self.market}'].execute(query)
         return result
 
@@ -58,7 +39,7 @@ class DbRepo(Repo):
         self.market = market
 
     def __make_dataframe(self, output_request):
-        df = pandas.DataFrame(output_request.fetchall())
+        df = DataFrame(output_request.fetchall())
         df.columns = output_request.keys()
         df.columns = df.columns.str.lower()
         return df
@@ -89,21 +70,15 @@ class DbRepo(Repo):
         task = Task(df)
         return task
 
-    def get_trades(self, **kwargs):
+    def get_trades(self, order_by, **kwargs):
         trades = []
-        # order_by = ()
-        # if 'order_by' in kwargs:
-        #     order_by = kwargs['order_by']
-        #     kwargs.pop('task')
         dates, kwargs = self.__get_dates_and_arguments(**kwargs)[:2]
-        # return TrateList(connection=self.connection[f'history_{str(self.market)}'], dates=dates, kwargs=kwargs)
-        df = pandas.DataFrame()
-        for date in dates:
-            df_data = self.__make_dataframe(self.get_data(order_by=order_by, date=str(date), table='FRC_TRADES', schema='history', **kwargs))
-            df = pandas.concat([df, df_data], ignore_index=True)
-            # trades_for_date = [Trade(row) for index, row in df.iterrows()]
-            # trades += trades_for_date
-        return df
+        return TradeList(connection=self.connection[f'history_{str(self.market)}'], dates=dates, kwargs=kwargs)
+        # for date in dates:
+        #     df = self.__make_dataframe(self.get_data(date=str(date), table='FRC_TRADES', schema='history', **kwargs))
+        #     trades_for_date = [Trade(row) for index, row in df.iterrows()]
+        #     trades += trades_for_date
+        # return trades
 
     def get_signals(self, **kwargs):
         signals = []
