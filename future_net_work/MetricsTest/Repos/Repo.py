@@ -1,24 +1,28 @@
+from abc import ABC, abstractmethod
+
+
 class Repo:
-    def __init__(self):
+    @abstractmethod
+    def get_task(self, *args, **kwargs):
         pass
 
-    def get_task(self):
+    @abstractmethod
+    def get_trades(self, *args, **kwargs):
         pass
 
-    def get_trades(self):
+    @abstractmethod
+    def get_signals(self, *args, **kwargs):
         pass
 
-    def get_signals(self):
+    @abstractmethod
+    def get_all_trades(self, *args, **kwargs):
         pass
 
-    def get_all_trades(self):
+    @abstractmethod
+    def get_orders(self, *args, **kwargs):
         pass
 
-    def get_orders(self):
+    @abstractmethod
+    def get_events(self, *args, **kwargs):
         pass
 
-    def get_events(self):
-        pass
-
-    def execute(self, schema, query):
-        pass

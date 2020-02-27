@@ -33,7 +33,6 @@ def db():
     instance_dir = 'D:\check'
     instance = monitoring_instance.MonitoringInstance(instance_dir)
     connection = instance.get_connections()
-    markets = instance.get_market_config().values()
-    dbrepo = DbRepo.DbRepo(connection=connection, markets=markets)
+    dbrepo = DbRepo.DbRepo(connection=connection)
     db = EventMonitoringDb.EventMonitoringDb(dbrepo)
     return db

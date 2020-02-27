@@ -1,3 +1,5 @@
+from py_linq import Enumerable
+
 class Trade:
 
     def __init__(self, df):
@@ -72,10 +74,254 @@ class Task:
         self.taskid = self.df['taskid'].values[0]
 
 
-class Market:
+def where(source, **kwargs):
+    where_arg = ' where'
+    if 'task' in kwargs.keys():
+        task = source.get_task(id=kwargs['task'])
+        start = str(task.starttime)
+        end = str(task.endtime)
+        where_arg += f' evdate between {start} and {end}'
+    return where_arg
 
-    def __init__(self, market):
-        self.market = market
 
-    def __str__(self):
-        return str(self.market).lower()
+def select(mapping, *args):
+    select_arg = ''
+    for field in args:
+        select_arg += f' {mapping.get(field, field)}'
+    select_list = select_arg.split()
+    result_order_list = []
+    for field in select_list:
+        field = f'{field},'
+        result_order_list.append(field)
+    select_arg = ' '.join(result_order_list)[:-1]
+    return select_arg
+
+
+def group_or_order_by(type, mapping, *args):
+    clause = f' {type} by'
+    for field in args:
+        clause += f' {mapping.get(field, field)}'
+    parameters_list = clause.split()
+    result_list = parameters_list.copy()[:2]
+    for field in parameters_list[2:]:
+        field = f'{field},'
+        result_list.append(field)
+    clause = ' '.join(result_list)[:-1]
+    return clause
+
+
+class TradesData:
+
+    def __init__(self, source):
+        self.source = source
+        self.where_arg = ''
+        self.groupby = ''
+        self.orderby = ''
+        self.select_arg = '*'
+        self.mapping = {'task': 'TASKID', 'date': 'EVDATE', 'time': 'ORDERTIME', 'id': 'tradeno'}
+
+    def where(self, **kwargs):
+        self.where_arg = where(source=self.source, **kwargs)
+        return self
+
+    def select(self, *args):
+        self.select_arg = select(mapping=self.mapping, *args)
+        return self
+
+    def group_by(self, *args):
+        self.groupby = group_or_order_by(type='group', mapping=self.mapping, *args)
+        return self
+
+    def order_by(self, *args):
+        self.orderby = group_or_order_by(type='order', mapping=self.mapping, *args)
+        return self
+
+    def to_list(self):
+        df = self.source.get_trades(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
+                                    order_by=self.orderby)
+        return [Trade(row) for index, row in df.iterrows()]
+
+    def to_frame(self):
+        df = self.source.get_trades(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
+                                    order_by=self.orderby)
+        return df
+
+    def to_enumerable(self):
+        df = self.source.get_trades(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
+                                    order_by=self.orderby)
+        return Enumerable(df.T.to_dict().values())
+
+
+class SignalsData:
+
+    def __init__(self, source):
+        self.source = source
+        self.where_arg = ''
+        self.groupby = ''
+        self.orderby = ''
+        self.select_arg = '*'
+        self.mapping = {'task': 'TASKID', 'date': 'EVDATE', 'time': 'ORDERTIME', 'id': 'tradeno'}
+        # self.mapping = {'task': 'TASKID','date': 'EVDATE', 'time': 'ORDERTIME', 'id': 'tradeno'}
+
+    def where(self, **kwargs):
+        self.where_arg = where(source=self.source, **kwargs)
+        return self
+
+    def select(self, *args):
+        self.select_arg = select(mapping=self.mapping, *args)
+        return self
+
+    def group_by(self, *args):
+        self.groupby = group_or_order_by(type='group', mapping=self.mapping, *args)
+        return self
+
+    def order_by(self, *args):
+        self.orderby = group_or_order_by(type='order', mapping=self.mapping, *args)
+        return self
+
+    def to_list(self):
+        df = self.source.get_signals(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
+                                     order_by=self.orderby)
+        return [Signal(row) for index, row in df.iterrows()]
+
+    def to_frame(self):
+        df = self.source.get_signals(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
+                                     order_by=self.orderby)
+        return df
+
+    def to_enumerable(self):
+        df = self.source.get_signals(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
+                                     order_by=self.orderby)
+        return Enumerable(df.T.to_dict().values())
+
+
+class AllTradesData:
+
+    def __init__(self, source, **kwargs):
+        self.kwargs = kwargs
+        self.source = source
+        self.where_arg = ''
+        self.groupby = ''
+        self.orderby = ''
+        self.select_arg = '*'
+        self.mapping = {'task': 'TASKID', 'date': 'EVDATE', 'time': 'ORDERTIME', 'id': 'tradeno'}
+        # self.mapping = {'task': 'TASKID','date': 'EVDATE', 'time': 'ORDERTIME', 'id': 'tradeno'}
+
+    def where(self, **kwargs):
+        self.where_arg = where(source=self.source, **kwargs)
+        return self
+
+    def select(self, *args):
+        self.select_arg = select(mapping=self.mapping, *args)
+        return self
+
+    def group_by(self, *args):
+        self.groupby = group_or_order_by(type='group', mapping=self.mapping, *args)
+        return self
+
+    def order_by(self, *args):
+        self.orderby = group_or_order_by(type='order', mapping=self.mapping, *args)
+        return self
+
+    def to_list(self):
+        df = self.source.get_all_trades(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
+                                        order_by=self.orderby)
+        return [Signal(row) for index, row in df.iterrows()]
+
+    def to_frame(self):
+        df = self.source.get_all_trades(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
+                                        order_by=self.orderby)
+        return df
+
+    def to_enumerable(self):
+        df = self.source.get_all_trades(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
+                                        order_by=self.orderby)
+        return Enumerable(df.T.to_dict().values())
+
+
+class OrdersData:
+
+    def __init__(self, source, **kwargs):
+        self.kwargs = kwargs
+        self.source = source
+        self.where_arg = ''
+        self.groupby = ''
+        self.orderby = ''
+        self.select_arg = '*'
+        self.mapping = {'task': 'TASKID', 'date': 'EVDATE', 'time': 'ORDERTIME', 'id': 'tradeno'}
+        # self.mapping = {'task': 'TASKID','date': 'EVDATE', 'time': 'ORDERTIME', 'id': 'tradeno'}
+
+    def where(self, **kwargs):
+        self.where_arg = where(source=self.source, **kwargs)
+        return self
+
+    def select(self, *args):
+        self.select_arg = select(mapping=self.mapping, *args)
+        return self
+
+    def group_by(self, *args):
+        self.groupby = group_or_order_by(type='group', mapping=self.mapping, *args)
+        return self
+
+    def order_by(self, *args):
+        self.orderby = group_or_order_by(type='order', mapping=self.mapping, *args)
+        return self
+
+    def to_list(self):
+        df = self.source.get_orders(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
+                                    order_by=self.orderby)
+        return [Signal(row) for index, row in df.iterrows()]
+
+    def to_frame(self):
+        df = self.source.get_orders(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
+                                    order_by=self.orderby)
+        return df
+
+    def to_enumerable(self):
+        df = self.source.get_orders(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
+                                    order_by=self.orderby)
+        return Enumerable(df.T.to_dict().values())
+
+
+class EventsData:
+
+    def __init__(self, source, **kwargs):
+        self.kwargs = kwargs
+        self.source = source
+        self.where_arg = ''
+        self.groupby = ''
+        self.orderby = ''
+        self.select_arg = '*'
+        self.mapping = {'task': 'TASKID', 'date': 'EVDATE', 'time': 'ORDERTIME', 'id': 'tradeno'}
+        # self.mapping = {'task': 'TASKID','date': 'EVDATE', 'time': 'ORDERTIME', 'id': 'tradeno'}
+
+    def where(self, **kwargs):
+        self.where_arg = where(source=self.source, **kwargs)
+        return self
+
+    def select(self, *args):
+        self.select_arg = select(mapping=self.mapping, *args)
+        return self
+
+    def group_by(self, *args):
+        self.groupby = group_or_order_by(type='group', mapping=self.mapping, *args)
+        return self
+
+    def order_by(self, *args):
+        self.orderby = group_or_order_by(type='order', mapping=self.mapping, *args)
+        return self
+
+    def to_list(self):
+        df = self.source.get_events(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
+                                    order_by=self.orderby)
+        return [Signal(row) for index, row in df.iterrows()]
+
+    def to_frame(self):
+        df = self.source.get_events(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
+                                    order_by=self.orderby)
+        return df
+
+    def to_enumerable(self):
+        df = self.source.get_events(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
+                                    order_by=self.orderby)
+        return Enumerable(df.T.to_dict().values())
