@@ -1,8 +1,9 @@
 def test_PricePenultimateTrade(db, task):
     db.set_market('cur')
     signals = db.get_signals(task=task)
-    date = db.get_task(task)[0].date
-    query = f'''select tradeno, secboard, seccode, tradetype, price from frc_trades where evdate = {date} order by tradeno desc'''
+    starttime = db.get_task(task).starttime
+    endtime = db.get_task(task).endtime
+    query = f'''select tradeno, secboard, seccode, tradetype, price from frc_trades where evdate between {starttime} and {endtime} order by tradeno desc'''
     df = db.execute(schema='history', query=query)
     for signal in signals:
         maxtradeno = df[

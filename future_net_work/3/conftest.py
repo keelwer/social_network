@@ -23,9 +23,9 @@ def instance_dir(request):
     return request.config.getoption("--instance_dir")
 
 
-@pytest.fixture
-def task(request):
-    return request.config.getoption("--task")[0]
+# @pytest.fixture
+# def task(request):
+#     return request.config.getoption("--task")[0]
 
 
 @pytest.fixture

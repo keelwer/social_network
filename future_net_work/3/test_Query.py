@@ -1,4 +1,4 @@
-from Events.markets import Market
+from Events.EventTypes import Market
 
 def test_query(db):
     db.set_market(Market.EQ)
