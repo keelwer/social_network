@@ -134,16 +134,14 @@ def group_or_order_by(*args, type_clause, mapping):
     return clause
 
 
-class TradesData:
-
+class BaseClassData:
     def __init__(self, source):
         self.source = source
         self.where_arg = ''
         self.groupby = ''
         self.orderby = ''
         self.select_arg = '*'
-        self.mapping = {'task': 'TASKID', 'date': 'EVDATE', 'id': 'TRADENO', 'user': 'USERID', 'orderid': 'ORDERNO',
-                        'time': 'TRADETIME'}
+        self.mapping = {}
 
     def where(self, **kwargs):
         self.where_arg = where(source=self.source, mapping=self.mapping, **kwargs).upper()
@@ -157,6 +155,15 @@ class TradesData:
     def order_by(self, *args):
         self.orderby = group_or_order_by(type_clause='order', mapping=self.mapping, *args).upper()
         return self
+
+
+class TradesData(BaseClassData):
+
+    def __init__(self, source):
+        super(TradesData, self).__init__(source)
+        self.source = source
+        self.mapping = {'task': 'TASKID', 'date': 'EVDATE', 'id': 'TRADENO', 'user': 'USERID', 'orderid': 'ORDERNO',
+                        'time': 'TRADETIME'}
 
     def to_list(self):
         data = self.source.get_trades(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
@@ -174,28 +181,16 @@ class TradesData:
         return Enumerable(data)
 
 
-class SignalsData:
+class SignalsData(BaseClassData):
 
     def __init__(self, source):
+        super(SignalsData, self).__init__(source)
         self.source = source
-        self.where_arg = ''
-        self.groupby = ''
-        self.orderby = ''
-        self.select_arg = '*'
         self.mapping = {'task': 'TASKID', 'date': 'EVDATE', 'time': 'EVTIME', 'tradeid': 'TSNO', 'orderid': 'ORDERNO',
                         'type': 'EVTYPE'}
 
     def where(self, **kwargs):
         self.where_arg = where(source=self.source, mapping=self.mapping, name_event='signal', **kwargs).upper()
-        return self
-
-    def group_by(self, *args):
-        self.select_arg = select(mapping=self.mapping, *args).upper()
-        self.groupby = group_or_order_by(type_clause='group', mapping=self.mapping, *args).upper()
-        return self
-
-    def order_by(self, *args):
-        self.orderby = group_or_order_by(type_clause='order', mapping=self.mapping, *args).upper()
         return self
 
     def to_list(self):
@@ -214,29 +209,12 @@ class SignalsData:
         return Enumerable(data)
 
 
-class AllTradesData:
+class AllTradesData(BaseClassData):
 
-    def __init__(self, source, **kwargs):
-        self.kwargs = kwargs
+    def __init__(self, source):
+        super(AllTradesData, self).__init__(source)
         self.source = source
-        self.where_arg = ''
-        self.groupby = ''
-        self.orderby = ''
-        self.select_arg = '*'
         self.mapping = {'id': 'TRADENO', 'date': 'EVDATE', 'time': 'TRADETIME'}
-
-    def where(self, **kwargs):
-        self.where_arg = where(source=self.source, mapping=self.mapping, **kwargs).upper()
-        return self
-
-    def group_by(self, *args):
-        self.select_arg = select(mapping=self.mapping, *args).upper()
-        self.groupby = group_or_order_by(type_clause='group', mapping=self.mapping, *args).upper()
-        return self
-
-    def order_by(self, *args):
-        self.orderby = group_or_order_by(type_clause='order', mapping=self.mapping, *args).upper()
-        return self
 
     def to_list(self):
         data = self.source.get_all_trades(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
@@ -254,29 +232,12 @@ class AllTradesData:
         return Enumerable(data)
 
 
-class OrdersData:
+class OrdersData(BaseClassData):
 
-    def __init__(self, source, **kwargs):
-        self.kwargs = kwargs
+    def __init__(self, source):
+        super(OrdersData, self).__init__(source)
         self.source = source
-        self.where_arg = ''
-        self.groupby = ''
-        self.orderby = ''
-        self.select_arg = '*'
         self.mapping = {'date': 'EVDATE', 'time': 'ORDERTIME', 'id': 'ORDERNO'}
-
-    def where(self, **kwargs):
-        self.where_arg = where(source=self.source, mapping=self.mapping, **kwargs).upper()
-        return self
-
-    def group_by(self, *args):
-        self.select_arg = select(mapping=self.mapping, *args).upper()
-        self.groupby = group_or_order_by(type_clause='group', mapping=self.mapping, *args).upper()
-        return self
-
-    def order_by(self, *args):
-        self.orderby = group_or_order_by(type_clause='order', mapping=self.mapping, *args).upper()
-        return self
 
     def to_list(self):
         data = self.source.get_orders(select=self.select_arg, where=self.where_arg, group_by=self.groupby,
@@ -294,15 +255,11 @@ class OrdersData:
         return Enumerable(data)
 
 
-class EventsData:
+class EventsData(BaseClassData):
 
-    def __init__(self, source, **kwargs):
-        self.kwargs = kwargs
+    def __init__(self, source):
+        super(EventsData, self).__init__(source)
         self.source = source
-        self.where_arg = ''
-        self.groupby = ''
-        self.orderby = ''
-        self.select_arg = '*'
         self.mapping = {'type': 'EVTYPE', 'date': 'EVDATE', 'time': 'EVTIME', 'orderid': 'ORDERNO',
                         'tradeid': 'TRADENO', 'trade': 2, 'order': 1, 'withdraws': 3, 'alltrades': 12, 'timeevents': 14}
 
@@ -310,15 +267,6 @@ class EventsData:
         if 'type' in kwargs.keys():
             kwargs['evtype'] = self.mapping[kwargs.pop('type')]
         self.where_arg = where(source=self.source, mapping=self.mapping, **kwargs).upper()
-        return self
-
-    def group_by(self, *args):
-        self.select_arg = select(mapping=self.mapping, *args).upper()
-        self.groupby = group_or_order_by(type_clause='group', mapping=self.mapping, *args).upper()
-        return self
-
-    def order_by(self, *args):
-        self.orderby = group_or_order_by(type_clause='order', mapping=self.mapping, *args).upper()
         return self
 
     def to_list(self):
