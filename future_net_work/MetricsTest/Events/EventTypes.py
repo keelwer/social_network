@@ -2,6 +2,7 @@ from py_linq import Enumerable
 
 
 class Trade:
+    name = 'trade'
 
     def __init__(self, row):
         self.date = row.get('EVDATE', None)
@@ -37,6 +38,7 @@ class Signal:
 
 
 class AllTrades:
+    name = 'alltrades'
 
     def __init__(self, row):
         self.id = row.get('TRADENO', None)
@@ -50,6 +52,7 @@ class AllTrades:
 
 
 class Orders:
+    name = 'order'
 
     def __init__(self, row):
         self.date = row.get('EVDATE', None)
@@ -72,6 +75,10 @@ class Events:
         self.tradeid = row.get('TRADENO', None)
 
 
+class TimeEvents:
+    name = 'timeevents'
+
+
 class Task:
 
     def __init__(self, row):
@@ -80,33 +87,24 @@ class Task:
         self.taskid = row.get('TASKID', None)
 
 
-        condition = ''
-        if kwargs:
-            condition = 'where '
-        for field, value in kwargs.items():
-            condition += f' {field}={value}'
-        condition_list = condition.split()
-        result_condition = condition_list.copy()[:2]
-        for condition_parameter in condition_list[2:]:
-            condition_parameter = f'and {condition_parameter}'
-            result_condition.append(condition_parameter)
-        condition = ' '.join(result_condition)
-        return condition
-
-
-
-def where(source, name_event=None, **kwargs):
+def where(source, name_event=None, mapping=None, **kwargs):
     where_arg = 'where'
     if name_event == 'signal':
-        where_arg += f' TASKID = {kwargs["task"]}'
+        where_arg += f'|{mapping["task"]} = {kwargs["task"]}'
         kwargs.pop('task')
     elif 'task' in kwargs.keys():
         task = source.get_task(id=kwargs['task'])
         start = str(task.starttime)
         end = str(task.endtime)
-        where_arg += f'| EVDATE between {start} and {end}'
+        where_arg += f'|{mapping["date"]} between {start} and {end}'
     for field, value in kwargs.items():
-        where_arg += f' {field}={value}'
+        where_arg += f'|{mapping.get(field, field)}={value}'
+    where_list = where_arg.split('|')
+    result_condition = where_list.copy()[:2]
+    for condition_parameter in where_list[2:]:
+        condition_parameter = f'and {condition_parameter}'
+        result_condition.append(condition_parameter)
+    where_arg = ' '.join(result_condition)
     return where_arg
 
 
@@ -148,7 +146,7 @@ class TradesData:
                         'time': 'TRADETIME'}
 
     def where(self, **kwargs):
-        self.where_arg = where(source=self.source, **kwargs).upper()
+        self.where_arg = where(source=self.source, mapping=self.mapping, **kwargs).upper()
         return self
 
     def group_by(self, *args):
@@ -184,10 +182,11 @@ class SignalsData:
         self.groupby = ''
         self.orderby = ''
         self.select_arg = '*'
-        self.mapping = {'task': 'TASKID', 'date': 'EVDATE', 'time': 'EVTIME', 'tradeid': 'TSNO', 'orderid': 'ORDERNO', 'type': 'EVTYPE'}
+        self.mapping = {'task': 'TASKID', 'date': 'EVDATE', 'time': 'EVTIME', 'tradeid': 'TSNO', 'orderid': 'ORDERNO',
+                        'type': 'EVTYPE'}
 
     def where(self, **kwargs):
-        self.where_arg = where(source=self.source, name_event='signal', **kwargs).upper()
+        self.where_arg = where(source=self.source, mapping=self.mapping, name_event='signal', **kwargs).upper()
         return self
 
     def group_by(self, *args):
@@ -227,7 +226,7 @@ class AllTradesData:
         self.mapping = {'id': 'TRADENO', 'date': 'EVDATE', 'time': 'TRADETIME'}
 
     def where(self, **kwargs):
-        self.where_arg = where(source=self.source, **kwargs).upper()
+        self.where_arg = where(source=self.source, mapping=self.mapping, **kwargs).upper()
         return self
 
     def group_by(self, *args):
@@ -267,7 +266,7 @@ class OrdersData:
         self.mapping = {'date': 'EVDATE', 'time': 'ORDERTIME', 'id': 'ORDERNO'}
 
     def where(self, **kwargs):
-        self.where_arg = where(source=self.source, **kwargs).upper()
+        self.where_arg = where(source=self.source, mapping=self.mapping, **kwargs).upper()
         return self
 
     def group_by(self, *args):
@@ -304,13 +303,13 @@ class EventsData:
         self.groupby = ''
         self.orderby = ''
         self.select_arg = '*'
-        self.mapping = {'type': 'EVTYPE', 'date': 'EVDATE', 'time': 'EVTIME', 'orderid': 'ORDERNO', 'tradeid': 'TRADENO'}
-        self.mapping_types = {'trade': 2, 'order': 1, 'withdraws': 3, 'alltrades': 12, 'timeevents': 14}
+        self.mapping = {'type': 'EVTYPE', 'date': 'EVDATE', 'time': 'EVTIME', 'orderid': 'ORDERNO',
+                        'tradeid': 'TRADENO', 'trade': 2, 'order': 1, 'withdraws': 3, 'alltrades': 12, 'timeevents': 14}
 
     def where(self, **kwargs):
         if 'type' in kwargs.keys():
-            kwargs['evtype'] = self.mapping_types[kwargs.pop('type')]
-        self.where_arg = where(source=self.source, **kwargs).upper()
+            kwargs['evtype'] = self.mapping[kwargs.pop('type')]
+        self.where_arg = where(source=self.source, mapping=self.mapping, **kwargs).upper()
         return self
 
     def group_by(self, *args):
